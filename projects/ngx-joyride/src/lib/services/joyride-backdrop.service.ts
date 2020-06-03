@@ -62,7 +62,8 @@ export class JoyrideBackdropService {
         this.renderer.addClass(this.backdropTop, 'joyride-backdrop');
         this.renderer.addClass(this.backdropTop, 'backdrop-top');
         this.renderer.setStyle(this.backdropTop, 'width', '100%');
-        this.renderer.setStyle(this.backdropTop, 'height', this.targetAbsoluteTop - this.lastYScroll + 'px');
+        const newBackdropTopHeight = step.isElementOrAncestorFixed ? this.targetAbsoluteTop : this.targetAbsoluteTop - this.lastYScroll;
+        this.renderer.setStyle(this.backdropTop, 'height', newBackdropTopHeight + 'px');
         this.renderer.setStyle(this.backdropTop, 'flex-shrink', '0');
         this.renderer.setStyle(this.backdropTop, 'background-color', `rgba(${this.optionsService.getBackdropColor()}, 0.7)`);
         this.renderer.appendChild(this.backdropContent, this.backdropTop);
