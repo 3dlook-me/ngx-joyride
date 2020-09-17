@@ -171,56 +171,11 @@ export class JoyrideStepService implements IJoyrideStepService {
     }
 
     private scrollIfStepAndTargetAreNotVisible() {
-        this.scrollWhenTargetOrStepAreHiddenBottom();
-        this.scrollWhenTargetOrStepAreHiddenTop();
+        this.scrollToTargetOrStepAreHidden();
     }
 
-    private scrollWhenTargetOrStepAreHiddenBottom() {
-        let totalTargetBottom = this.getMaxTargetAndStepBottomPosition();
-        if (totalTargetBottom > this.winBottomPosition) {
-            this.DOMService.getNativeWindow().scrollBy(0, totalTargetBottom - this.winBottomPosition);
-        }
-    }
-
-    private scrollWhenTargetOrStepAreHiddenTop() {
-        let totalTargetTop = this.getMaxTargetAndStepTopPosition();
-        if (totalTargetTop < this.winTopPosition) {
-            this.DOMService.getNativeWindow().scrollBy(0, totalTargetTop - this.winTopPosition);
-        }
-    }
-
-    private getMaxTargetAndStepBottomPosition(): number {
-        let targetAbsoluteTop = this.documentService.getElementAbsoluteTop(this.currentStep.targetViewContainer.element);
-        if (this.currentStep.position === 'top') {
-            return targetAbsoluteTop + this.currentStep.stepInstance.targetHeight;
-        } else if (this.currentStep.position === 'bottom') {
-            return (
-                targetAbsoluteTop +
-                this.currentStep.stepInstance.targetHeight +
-                this.currentStep.stepInstance.stepHeight +
-                ARROW_SIZE +
-                DISTANCE_FROM_TARGET
-            );
-        } else if (this.currentStep.position === 'right' || this.currentStep.position === 'left') {
-            return Math.max(
-                targetAbsoluteTop + this.currentStep.stepInstance.targetHeight,
-                targetAbsoluteTop + this.currentStep.stepInstance.targetHeight / 2 + this.currentStep.stepInstance.stepHeight / 2
-            );
-        }
-    }
-
-    private getMaxTargetAndStepTopPosition() {
-        let targetAbsoluteTop = this.documentService.getElementAbsoluteTop(this.currentStep.targetViewContainer.element);
-        if (this.currentStep.position === 'top') {
-            return targetAbsoluteTop - (this.currentStep.stepInstance.stepHeight + ARROW_SIZE + DISTANCE_FROM_TARGET);
-        } else if (this.currentStep.position === 'bottom') {
-            return targetAbsoluteTop;
-        } else if (this.currentStep.position === 'right' || this.currentStep.position === 'left') {
-            return Math.min(
-                targetAbsoluteTop,
-                targetAbsoluteTop + this.currentStep.stepInstance.targetHeight / 2 - this.currentStep.stepInstance.stepHeight / 2
-            );
-        }
+    private scrollToTargetOrStepAreHidden() {
+        this.currentStep.targetViewContainer.element.nativeElement.scrollIntoView({block: 'start'});
     }
 
     private scrollIfElementBeyondOtherElements() {
