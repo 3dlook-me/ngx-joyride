@@ -1,6 +1,9 @@
 {
-    "name": "ngx-joyride",
-    "version": "2.2.11",
+    "name": "@3dlook/ngx-joyride",
+    "version": "2.3.0",
+    "publishConfig": {
+        "registry": "https://nexus.3dlook.me/repository/3dlook-npm-hosted/"
+    },
     "peerDependencies": {
         "@angular/common": "^8.2.14",
         "@angular/core": "^8.2.14"
