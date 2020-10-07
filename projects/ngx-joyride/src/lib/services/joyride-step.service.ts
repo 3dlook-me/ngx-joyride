@@ -9,7 +9,7 @@ import { DomRefService } from './dom.service';
 import { NO_POSITION } from '../directives/joyride.directive';
 import { JoyrideOptionsService } from './joyride-options.service';
 import { Router } from '@angular/router';
-import { ReplaySubject, Observable } from 'rxjs';
+import { ReplaySubject, Observable, timer } from 'rxjs';
 import { JoyrideStepInfo } from '../models/joyride-step-info.class';
 import { JoyrideStepDoesNotExist, JoyrideStepOutOfRange } from '../models/joyride-error.class';
 import { LoggerService } from './logger.service';
@@ -108,7 +108,8 @@ export class JoyrideStepService implements IJoyrideStepService {
     private navigateToStepPage(action: StepActionType) {
         let stepRoute = this.stepsContainerService.getStepRoute(action);
         if (stepRoute) {
-            this.router.navigate([stepRoute]);
+            this.router.navigate([stepRoute])
+              .then(() => this.documentService.setDocumentHeight());
         }
     }
 
@@ -175,22 +176,11 @@ export class JoyrideStepService implements IJoyrideStepService {
     }
 
     private scrollToTargetOrStepAreHidden() {
-        this.currentStep.targetViewContainer.element.nativeElement.scrollIntoView({block: 'start'});
+        this.currentStep.targetViewContainer.element.nativeElement.scrollIntoView({block: 'center'});
     }
 
     private scrollIfElementBeyondOtherElements() {
-        if (this.isElementBeyondOthers() === 2) {
-            this.documentService.scrollToTheTop(this.currentStep.targetViewContainer.element);
-        }
-        if (this.isElementBeyondOthers() === 2) {
-            this.documentService.scrollToTheBottom(this.currentStep.targetViewContainer.element);
-        }
-        if (this.isElementBeyondOthers() === 1 && this.documentService.isParentScrollable(this.currentStep.targetViewContainer.element)) {
-            this.documentService.scrollIntoView(this.currentStep.targetViewContainer.element, this.currentStep.isElementOrAncestorFixed);
-        }
-        if (this.isElementBeyondOthers() === 1 && this.documentService.isParentScrollable(this.currentStep.targetViewContainer.element)) {
-            this.currentStep.targetViewContainer.element.nativeElement.scrollIntoView();
-        }
+      this.currentStep.targetViewContainer.element.nativeElement.scrollIntoView({block: 'center'});
     }
 
     private isElementBeyondOthers() {

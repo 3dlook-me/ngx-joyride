@@ -9,7 +9,8 @@ import {
     ViewChild,
     Renderer2,
     Injector,
-    TemplateRef
+    TemplateRef,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import { JoyrideStep } from '../../models/joyride-step.class';
 import {
@@ -20,11 +21,12 @@ import {
 } from '../../services';
 import { JoyrideStepsContainerService } from '../../services/joyride-steps-container.service';
 import { EventListenerService } from '../../services/event-listener.service';
-import { Subscription, Observable } from 'rxjs';
+import { Subscription, Observable, Subject } from 'rxjs';
 import { DocumentService } from '../../services/document.service';
 import { JoyrideOptionsService } from '../../services/joyride-options.service';
 import { LoggerService } from '../../services/logger.service';
 import { TemplatesService } from '../../services/templates.service';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 const STEP_MIN_WIDTH = 200;
 const STEP_MAX_WIDTH = 400;
@@ -40,7 +42,8 @@ const DEFAULT_DISTANCE_FROM_MARGIN_RIGHT = 5;
     selector: 'joyride-step',
     templateUrl: './joyride-step.component.html',
     styleUrls: ['./joyride-step.component.scss'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class JoyrideStepComponent implements OnInit, OnDestroy, AfterViewInit {
     stepWidth: number = STEP_MIN_WIDTH;
@@ -78,6 +81,7 @@ export class JoyrideStepComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private positionAlreadyFixed: boolean;
     private documentHeight: number;
+    private onDestroy$ = new Subject<void>();
 
     prevText: Observable<string>;
     nextText: Observable<string>;
@@ -115,8 +119,24 @@ export class JoyrideStepComponent implements OnInit, OnDestroy, AfterViewInit {
         this.isPrevButtonVisible = this.optionsService.isPrevButtonVisible();
         this.themeColor = this.optionsService.getThemeColor();
 
-        if (this.text) this.text.subscribe(val => this.checkRedraw(val));
-        if (this.title) this.title.subscribe(val => this.checkRedraw(val));
+        if (this.text) {
+          this.text
+            .pipe(
+              distinctUntilChanged(),
+              debounceTime(100),
+              takeUntil(this.onDestroy$),
+            )
+            .subscribe(val => this.checkRedraw(val));
+        }
+        if (this.title) {
+          this.title
+            .pipe(
+              distinctUntilChanged(),
+              debounceTime(100),
+              takeUntil(this.onDestroy$),
+            )
+            .subscribe(val => this.checkRedraw(val));
+        }
     }
 
     ngAfterViewInit() {
@@ -216,6 +236,7 @@ export class JoyrideStepComponent implements OnInit, OnDestroy, AfterViewInit {
                 : this.documentService.getElementAbsoluteTop(
                       this.step.targetViewContainer.element
                   );
+        this.documentHeight = this.documentService.getDocumentHeight();
         this.setStepStyle();
     }
 
@@ -535,5 +556,7 @@ export class JoyrideStepComponent implements OnInit, OnDestroy, AfterViewInit {
         this.subscriptions.forEach(subscription => {
             subscription.unsubscribe();
         });
+
+        this.onDestroy$.next();
     }
 }
