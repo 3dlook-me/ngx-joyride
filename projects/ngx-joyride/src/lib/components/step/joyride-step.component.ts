@@ -10,7 +10,6 @@ import {
     Renderer2,
     Injector,
     TemplateRef,
-    ChangeDetectionStrategy,
 } from '@angular/core';
 import { JoyrideStep } from '../../models/joyride-step.class';
 import {
@@ -43,7 +42,6 @@ const DEFAULT_DISTANCE_FROM_MARGIN_RIGHT = 5;
     templateUrl: './joyride-step.component.html',
     styleUrls: ['./joyride-step.component.scss'],
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class JoyrideStepComponent implements OnInit, OnDestroy, AfterViewInit {
     stepWidth: number = STEP_MIN_WIDTH;
