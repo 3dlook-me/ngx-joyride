@@ -1,6 +1,6 @@
 {
     "name": "@3dlook/ngx-joyride",
-    "version": "2.3.0",
+    "version": "2.3.1",
     "publishConfig": {
         "registry": "https://nexus.3dlook.me/repository/3dlook-npm-hosted/"
     },
